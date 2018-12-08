@@ -1,66 +1,59 @@
-import React from "react";
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import * as actions from "../store/actions";
 import Card from "@material-ui/core/Card";
-import CardHeaderRaw from "@material-ui/core/CardHeader";
-import CardContent from "@material-ui/core/CardContent";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 import { withStyles } from "@material-ui/core/styles";
-import AvatarRaw from "@material-ui/core/Avatar";
 
-const cardStyles = theme => ({
-  root: {
-    background: theme.palette.primary.main
-  },
-  title: {
-    color: "white"
-  }
-});
-const CardHeader = withStyles(cardStyles)(CardHeaderRaw);
-
-const avatarStyles = theme => ({
-  root: {
-    background: theme.palette.primary.main
-  },
-  title: {
-    color: "white"
-  }
-});
-const Avatar = withStyles(avatarStyles)(AvatarRaw);
+import Dashboard from './Dashboard';
+import ChartVisualization from './ChartVisualization';
 
 const styles = {
   card: {
-    margin: "5% 25%"
+    margin: "5% 5%"
   }
 };
 
-const NowWhat = props => {
-  const { classes } = props;
-  return (
-    <Card className={classes.card}>
-      <CardHeader title="OK, Khushhal, you're all setup. Now What?" />
-      <CardContent>
-        <List>
-          <ListItem>
-            <Avatar>1</Avatar>
-            <ListItemText primary="Connect to the Drone API" />
-          </ListItem>
-          <ListItem>
-            <Avatar>2</Avatar>
-            <ListItemText primary="Create your Visualization" />
-          </ListItem>
-          <ListItem>
-            <Avatar>3</Avatar>
-            <ListItemText primary="Poll the API" />
-          </ListItem>
-          <ListItem>
-            <Avatar>4</Avatar>
-            <ListItemText primary="Submit Your App" />
-          </ListItem>
-        </List>
-      </CardContent>
-    </Card>
-  );
+class NowWhat extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectedTab: 0
+    }
+  }
+
+  componentWillMount() {
+    this.props.onLoad();
+  }
+
+  handleTabChange = (event, value) => {
+    this.setState({ selectedTab: value });
+  }
+
+  render() {
+    const { classes } = this.props;
+    const tabContent = {
+      0: <Dashboard />,
+      1: <ChartVisualization />
+    }
+    return (
+      <Card className={classes.card}>
+        <Tabs value={this.state.selectedTab} onChange={this.handleTabChange}>
+          <Tab label="Dashboard Visualization" />
+          <Tab label="Chart Visualization" />
+        </Tabs>
+        <div style={{ padding: '1rem' }}>
+          {tabContent[this.state.selectedTab]}
+        </div>
+      </Card>
+    );
+  }
 };
 
-export default withStyles(styles)(NowWhat);
+const mapDispatch = dispatch => ({
+  onLoad: () => dispatch({ type: actions.FETCH_METRICS }),
+});
+
+export default connect(null, mapDispatch)(withStyles(styles)((NowWhat)));
