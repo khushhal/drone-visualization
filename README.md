@@ -1,3 +1,2 @@
-## Create React App Visualization
-
-Read more about this assessment here
+# drone-visualization
+Drone posts information every 4 seconds. Visualize the drones position as dashboard view or chart view.
